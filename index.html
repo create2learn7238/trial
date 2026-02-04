@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Library Project</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<style>
+body{
+  font-family: Arial;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  transition:0.4s;
+}
+.section{display:none}
+.active{display:block}
+
+.hero{
+  background:linear-gradient(to right,#4facfe,#00f2fe);
+  color:white;
+  padding:50px;
+  text-align:center;
+}
+
+.book-card{transition:.3s}
+.book-card:hover{transform:scale(1.05)}
+
+.dark{background:#121212;color:white}
+.dark .card{background:#1e1e1e;color:white}
+.dark .navbar{background:black !important}
+
+footer{margin-top:auto}
+pre{white-space:pre-wrap}
+</style>
+</head>
+
+<body id="body">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container">
+
+<div id="navUser" class="d-flex align-items-center gap-2 text-light" style="display:none">
+  <i class="bi bi-person-circle fs-4"></i>
+  <span id="displayUser"></span>
+  <span id="premiumBadge" class="badge bg-warning text-dark" style="display:none">Premium</span>
+  <button class="btn btn-sm btn-secondary" onclick="toggleMode()">🌙</button>
+  <button class="btn btn-sm btn-danger" onclick="logout()">Logout</button>
+</div>
+
+<a class="navbar-brand ms-2">📚 E-Library</a>
+
+<ul class="navbar-nav ms-auto" id="navLinks">
+<li class="nav-item"><button class="btn btn-link nav-link" onclick="show('register')">Register</button></li>
+<li class="nav-item"><button class="btn btn-link nav-link" onclick="show('login')">Login</button></li>
+</ul>
+
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+<h1>E-Library System</h1>
+<p>Free users can read • Premium users can download</p>
+</div>
+
+<!-- REGISTER -->
+<section id="register" class="section container mt-4 active">
+<h3>Registration</h3>
+<input id="ruser" class="form-control mb-2" placeholder="Username">
+<input id="rpass" type="password" class="form-control mb-2" placeholder="Password">
+<select id="rtype" class="form-control mb-2">
+<option value="free">Free Member</option>
+<option value="premium">Premium Member</option>
+</select>
+
+<div class="form-check mb-2">
+<input class="form-check-input" type="checkbox" data-bs-toggle="modal" data-bs-target="#termsModal">
+<label class="form-check-label">Accept Terms & Conditions</label>
+</div>
+
+<button class="btn btn-success" onclick="register()">Register</button>
+</section>
+
+<!-- LOGIN -->
+<section id="login" class="section container mt-4">
+<h3>Login</h3>
+<input id="luser" class="form-control mb-2" placeholder="Username">
+<input id="lpass" type="password" class="form-control mb-2" placeholder="Password">
+<button class="btn btn-primary" onclick="login()">Login</button>
+<p id="lmsg" class="mt-2"></p>
+</section>
+
+<!-- BOOKS -->
+<section id="booksPage" class="section container mt-4">
+<h3>Books</h3>
+<p id="accessMsg"></p>
+
+<div class="row" id="books"></div>
+
+<h4 class="mt-4">📖 Reading Area</h4>
+<pre id="reader" class="border p-3"></pre>
+</section>
+
+<!-- FACULTY BUTTON -->
+<div class="text-center my-4">
+<button class="btn btn-info" onclick="showTime()">📌 Faculty Recommended</button>
+<p id="timeBox" class="fw-bold mt-2"></p>
+</div>
+
+<!-- COPYRIGHT -->
+<footer class="bg-dark text-light text-center py-3">
+© 2026 E-Library Project | FSD-1 Practical
+</footer>
+
+<!-- TERMS MODAL -->
+<div class="modal fade" id="termsModal">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5>Terms & Conditions</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<p>This E-Library is for educational use only.</p>
+<p>Premium users can download content for offline reading.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- FREE USER CAROUSEL MODAL -->
+<div class="modal fade" id="upgradeModal">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5>Upgrade to Premium</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+
+<div id="carouselExample" class="carousel slide">
+<div class="carousel-inner">
+<div class="carousel-item active text-center">
+<h4>📚 Read Unlimited Books</h4>
+</div>
+<div class="carousel-item text-center">
+<h4>⬇ Download for Offline Access</h4>
+</div>
+<div class="carousel-item text-center">
+<h4>⭐ Premium Learning Experience</h4>
+</div>
+</div>
+<button class="carousel-control-prev" data-bs-target="#carouselExample" data-bs-slide="prev">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" data-bs-target="#carouselExample" data-bs-slide="next">
+<span class="carousel-control-next-icon"></span>
+</button>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function show(id){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function register(){
+if(ruser.value==""||rpass.value==""){alert("All fields required");return;}
+localStorage.setItem("user",ruser.value);
+localStorage.setItem("pass",rpass.value);
+localStorage.setItem("type",rtype.value);
+alert("Registration Successful");
+show('login');
+}
+
+function login(){
+if(luser.value===localStorage.getItem("user") &&
+   lpass.value===localStorage.getItem("pass")){
+localStorage.setItem("logged","yes");
+
+navUser.style.display="flex";
+displayUser.innerText=luser.value;
+
+if(localStorage.getItem("type")==="premium"){
+premiumBadge.style.display="inline-block";
+accessMsg.innerText="Premium: Read & Download";
+}else{
+accessMsg.innerText="Free: Read only";
+}
+
+navLinks.style.display="none";
+show('booksPage');
+loadBooks();
+}else{
+lmsg.innerText="Invalid Login";
+}
+}
+
+function logout(){
+localStorage.removeItem("logged");
+navUser.style.display="none";
+premiumBadge.style.display="none";
+navLinks.style.display="flex";
+show('login');
+}
+
+function toggleMode(){
+body.classList.toggle("dark");
+}
+
+function showTime(){
+timeBox.innerText="Current Date & Time: "+new Date().toLocaleString();
+}
+
+let bookList=[
+{name:"HTML Basics",content:"HTML structures web pages."},
+{name:"CSS Guide",content:"CSS styles web pages."},
+{name:"JavaScript ES6",content:"JavaScript makes pages interactive."}
+];
+
+function loadBooks(){
+books.innerHTML="";
+reader.innerText="";
+let premium = localStorage.getItem("type")==="premium";
+
+bookList.forEach(b=>{
+books.innerHTML+=`
+<div class="col-md-4">
+<div class="card book-card mb-3">
+<div class="card-body">
+<h5>${b.name}</h5>
+<button class="btn btn-primary btn-sm" onclick="readBook('${b.content}')">Read</button>
+${premium ? 
+`<a class="btn btn-success btn-sm ms-2" download="${b.name}.txt"
+href="data:text/plain,${b.content}">Download</a>` :
+`<button class="btn btn-warning btn-sm ms-2" data-bs-toggle="modal"
+data-bs-target="#upgradeModal">Download</button>`
+}
+</div>
+</div>
+</div>`;
+});
+}
+
+function readBook(text){
+reader.innerText=text;
+}
+
+if(localStorage.getItem("logged")==="yes"){
+navUser.style.display="flex";
+displayUser.innerText=localStorage.getItem("user");
+if(localStorage.getItem("type")==="premium"){premiumBadge.style.display="inline-block";}
+navLinks.style.display="none";
+show('booksPage');
+loadBooks();
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
